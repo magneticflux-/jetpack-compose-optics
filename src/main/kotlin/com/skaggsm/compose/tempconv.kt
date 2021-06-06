@@ -5,11 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.runtime.*
 import arrow.core.*
 import arrow.optics.*
 import com.skaggsm.compose.Temperature.Celsius
@@ -22,7 +18,6 @@ data class TempConvState(val tempC: Option<Celsius>) {
     companion object
 }
 
-@optics
 sealed interface Temperature {
     val temp: Double
 
@@ -56,39 +51,32 @@ val stringParser: Prism<String, Option<Double>> = Prism(
 val celsiusParser = stringParser + celsiusIso
 val fahrenheitParser = stringParser + fahrenheitIso
 
+@Composable
+fun TemperatureText(label: String, textState: MutableState<String>) {
+    var text by textState
+    TextField(
+        text,
+        onValueChange = { text = it },
+        label = { Text(label) },
+        isError = stringParser.getOrModify(text).isLeft(),
+        singleLine = true
+    )
+}
+
 fun main() = Window {
-    Snapshot.registerGlobalWriteObserver {
-        println("Wrote $it")
-    }
     val state = remember { mutableStateOf(TempConvState(None)) }
 
     val tempCState = state.get(TempConvState.optionTempC)
     val tempCText = tempCState.reverseGet(celsiusParser)
-    var cText by tempCText
 
     val tempFState = tempCState.get(cToFIso)
     val tempFText = tempFState.reverseGet(fahrenheitParser)
-    var fText by tempFText
 
     MaterialTheme {
         Row {
-            Row {
-                TextField(
-                    cText,
-                    onValueChange = { cText = it },
-                    label = { Text("Celsius") },
-                    isError = stringParser.getOrNull(cText) == null
-                )
-            }
+            TemperatureText("Celsius", tempCText)
             Text("=")
-            Row {
-                TextField(
-                    fText,
-                    onValueChange = { fText = it },
-                    label = { Text("Fahrenheit") },
-                    isError = stringParser.getOrNull(fText) == null
-                )
-            }
+            TemperatureText("Fahrenheit", tempFText)
         }
     }
 }
