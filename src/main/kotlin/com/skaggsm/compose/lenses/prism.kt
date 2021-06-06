@@ -40,21 +40,20 @@ fun <T, U> MutableState<T>.reverseGet(prism: Prism<U, T>): MutableState<U> {
     val alternate = mutableStateOf<Option<U>>(None)
 
     /**
-     * A derived state that exploits the recomputation of the value to also reset the [alternate] state to [None].
+     * A derived state that exploits the recomputation of the value to also reset the `alternate` state to [None].
      *
      * It is used to implement the [StateObject] methods by delegation since I don't want to yet ;)
      */
     val derived = derivedStateOf {
-        alternate.value = None // When [this.value] changes, invalidate the "alternative"
-        prism.reverseGet(this.value) // Might as well get a useful value out of it for later
+        alternate.value = None // When `this.value` changes, invalidate the "alternative"
+        prism.reverseGet(this.value) // Get a value out of it to specify its dependency
     }
 
     return object : MutableState<U>, StateObject by (derived as StateObject), State<U> by derived {
         override var value: U
             get() {
-                val alt = alternate.value
-                val der = derived.value
-                return when (alt) {
+                val der = derived.value // Run the derived function if inputs changed (resets the alternate value if so)
+                return when (val alt = alternate.value) {
                     is Some -> {
                         alt.value // If there's an alternate value, use that
                     }
@@ -66,8 +65,7 @@ fun <T, U> MutableState<T>.reverseGet(prism: Prism<U, T>): MutableState<U> {
             set(value) {
                 when (val result = prism.getOrModify(value)) {
                     is Either.Right -> {
-                        // Prism applied successfully, propagate the change up to the input state and reset the alternate.
-                        alternate.value = None
+                        // Prism applied successfully, propagate the change up to the input state.
                         this@reverseGet.value = result.value
                     }
                     is Either.Left -> {
