@@ -58,7 +58,7 @@ fun <T, U> MutableState<T>.reverseGet(prism: Prism<U, T>): MutableState<U> {
                         alt.value // If there's an alternate value, use that
                     }
                     else -> {
-                        der // Otherwise, fallback to computing it using [derived]
+                        der // Otherwise, fallback to computing it using `derived`
                     }
                 }
             }
@@ -68,11 +68,9 @@ fun <T, U> MutableState<T>.reverseGet(prism: Prism<U, T>): MutableState<U> {
                         // Prism applied successfully, propagate the change up to the input state.
                         this@reverseGet.value = result.value
                     }
-                    is Either.Left -> {
-                        // Prism application failed, save the input in [alternate] if a call to [get] comes before any more changes.
-                        alternate.value = result.value.some()
-                    }
                 }
+                // Save the input in `alternate` for if a call to `get` comes before any dependencies change.
+                alternate.value = value.some()
             }
 
         override fun component1(): U = value
