@@ -12,10 +12,11 @@ fun <T, U> MutableState<T>.get(prism: Prism<T, U>): MutableState<Either<T, U>> =
 
 internal class PrismMutableState<T, U>(
     private val state: MutableState<T>,
-    private val prism: Prism<T, U>
-) : MutableState<Either<T, U>> {
+    private val prism: Prism<T, U>,
+    private val derived: State<Either<T, U>> = derivedStateOf { prism.getOrModify(state.value) }
+) : MutableState<Either<T, U>>, StateObject by (derived as StateObject), State<Either<T, U>> by derived {
     override var value: Either<T, U>
-        get() = prism.getOrModify(state.value)
+        get() = derived.value
         set(value) {
             when (value) {
                 is Either.Right -> {
