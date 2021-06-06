@@ -5,19 +5,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.*
-import arrow.core.None
-import arrow.core.Option
-import arrow.core.some
-import arrow.core.toOption
-import arrow.optics.Iso
-import arrow.optics.Optional
-import arrow.optics.Prism
-import arrow.optics.optics
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
+import arrow.core.*
+import arrow.optics.*
 import com.skaggsm.compose.Temperature.Celsius
 import com.skaggsm.compose.Temperature.Fahrenheit
 import com.skaggsm.compose.lenses.get
-import kotlin.math.roundToInt
+import com.skaggsm.compose.lenses.reverseGet
 
 @optics
 data class TempConvState(val tempC: Option<Celsius>) {
@@ -37,54 +35,47 @@ sealed interface Temperature {
     companion object
 }
 
+val celsiusIso = Iso(Option.lift(::Celsius), Option.lift(Celsius::temp))
+val fahrenheitIso = Iso(Option.lift(::Fahrenheit), Option.lift(Fahrenheit::temp))
+
 val cToF = Option.lift<Celsius, Fahrenheit> { Fahrenheit(it.temp * 9 / 5 + 32) }
 val fToC = Option.lift<Fahrenheit, Celsius> { Celsius((it.temp - 32) * 5 / 9) }
 
 val cToFIso = Iso(cToF, fToC)
 
-val parseString = Optional<String, Double>(
-    { it.toDoubleOrNull().toOption() },
-    { _, d -> d.toString() }
-)
-
-val stringParser: Prism<String, Double> = Prism(
+val stringParser: Prism<String, Option<Double>> = Prism(
     {
-        it.toDoubleOrNull().toOption()
+        when (val result = it.toDoubleOrNull().toOption()) {
+            is Some -> result.some()
+            is None -> None
+        }
     }, {
-        it.toString()
+        it.map(Double::toString).getOrElse { "" }
     }
 )
-
-@Composable
-fun MyTextField(text: MutableState<String>) {
-    return TextField(text.value, { text.value = it })
-}
+val celsiusParser = stringParser + celsiusIso
+val fahrenheitParser = stringParser + fahrenheitIso
 
 fun main() = Window {
+    Snapshot.registerGlobalWriteObserver {
+        println("Wrote $it")
+    }
     val state = remember { mutableStateOf(TempConvState(None)) }
 
-    val cTextState = remember { mutableStateOf("") }
-    var cText by cTextState
-    var fText by remember { mutableStateOf("") }
+    val tempCState = state.get(TempConvState.optionTempC)
+    val tempCText = tempCState.reverseGet(celsiusParser)
+    var cText by tempCText
 
-    var tempC by state.get(TempConvState.optionTempC)
-    var tempF by state.get(TempConvState.optionTempC + cToFIso)
+    val tempFState = tempCState.get(cToFIso)
+    val tempFText = tempFState.reverseGet(fahrenheitParser)
+    var fText by tempFText
 
     MaterialTheme {
         Row {
-            MyTextField(cTextState)
             Row {
                 TextField(
                     cText,
-                    onValueChange = { s ->
-                        cText = s
-                        stringParser.getOrNull(s)?.let {
-                            tempC = Celsius(it).some()
-                        }
-                        tempF.orNull()?.temp?.roundToInt()?.let {
-                            fText = "$it"
-                        }
-                    },
+                    onValueChange = { cText = it },
                     label = { Text("Celsius") },
                     isError = stringParser.getOrNull(cText) == null
                 )
@@ -93,15 +84,7 @@ fun main() = Window {
             Row {
                 TextField(
                     fText,
-                    onValueChange = { s ->
-                        fText = s
-                        stringParser.getOrNull(s)?.let {
-                            tempF = Fahrenheit(it).some()
-                        }
-                        tempC.orNull()?.temp?.roundToInt()?.let {
-                            cText = "$it"
-                        }
-                    },
+                    onValueChange = { fText = it },
                     label = { Text("Fahrenheit") },
                     isError = stringParser.getOrNull(fText) == null
                 )
