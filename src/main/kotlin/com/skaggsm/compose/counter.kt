@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import arrow.optics.optics
+import com.skaggsm.compose.lenses.get
 
 @optics
 data class CounterState(val counter1: Int = 0, val counter2: Int = 1) {
@@ -37,8 +38,8 @@ fun main() = Window {
     MaterialTheme {
         Column {
             println("Recomposing main")
-            Counter(state[CounterState.counter1])
-            Counter(state[CounterState.counter2])
+            Counter(state.get(CounterState.counter1))
+            Counter(state.get(CounterState.counter2))
         }
     }
 }
