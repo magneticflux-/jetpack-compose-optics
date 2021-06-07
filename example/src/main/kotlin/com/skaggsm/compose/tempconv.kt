@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.skaggsm.compose
 
 import androidx.compose.desktop.Window

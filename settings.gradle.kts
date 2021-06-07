@@ -3,7 +3,7 @@ pluginManagement {
         gradlePluginPortal()
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
     }
-    
 }
-rootProject.name = "kotlin-compose-testing"
+rootProject.name = "jetpack-compose-optics"
 
+include("library", "example")

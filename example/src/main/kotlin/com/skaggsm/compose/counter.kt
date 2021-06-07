@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package com.skaggsm.compose
 
 import androidx.compose.desktop.Window
@@ -22,7 +24,6 @@ data class CounterState(val counter1: Int = 0, val counter2: Int = 1) {
 fun Counter(state: MutableState<Int>) {
     var counter by state
     return Row(Modifier.padding(2.dp)) {
-        println("Recomposing counter")
         Button(onClick = {
             counter += 1
         }) {
@@ -37,7 +38,6 @@ fun main() = Window {
 
     MaterialTheme {
         Column {
-            println("Recomposing main")
             Counter(state.get(CounterState.counter1))
             Counter(state.get(CounterState.counter2))
         }
