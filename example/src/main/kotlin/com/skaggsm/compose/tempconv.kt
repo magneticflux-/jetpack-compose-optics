@@ -7,9 +7,21 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.*
-import arrow.core.*
-import arrow.optics.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
+import arrow.core.getOrElse
+import arrow.core.some
+import arrow.core.toOption
+import arrow.optics.Iso
+import arrow.optics.Prism
+import arrow.optics.optics
 import com.skaggsm.compose.Temperature.Celsius
 import com.skaggsm.compose.Temperature.Fahrenheit
 import com.skaggsm.compose.lenses.get
@@ -46,7 +58,8 @@ val stringParser: Prism<String, Option<Double>> = Prism(
             is Some -> result.some()
             is None -> None
         }
-    }, {
+    },
+    {
         it.map(Double::toString).getOrElse { "" }
     }
 )

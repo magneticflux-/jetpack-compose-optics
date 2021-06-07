@@ -2,10 +2,13 @@ import org.jetbrains.compose.compose
 
 plugins {
     kotlin("jvm")
+    `maven-publish`
+    id("com.diffplug.spotless")
+    id("org.shipkit.shipkit-changelog") version "1.1.15"
+    id("org.shipkit.shipkit-auto-version") version "1.1.17"
 }
 
 group = "com.skaggsm"
-version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -29,4 +32,33 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("library") {
+            from(components["java"])
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/magneticflux-/jetpack-compose-optics")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+
+spotless {
+    kotlin {
+        ktlint("0.41.0")
+    }
+    kotlinGradle {
+        ktlint("0.41.0")
+    }
 }

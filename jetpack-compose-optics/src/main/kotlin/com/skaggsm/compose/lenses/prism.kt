@@ -5,7 +5,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.StateObject
-import arrow.core.*
+import arrow.core.Either
+import arrow.core.None
+import arrow.core.Option
+import arrow.core.Some
+import arrow.core.some
 import arrow.optics.Prism
 
 fun <T, U> MutableState<T>.get(prism: Prism<T, U>): MutableState<Either<T, U>> = PrismMutableState(this, prism)

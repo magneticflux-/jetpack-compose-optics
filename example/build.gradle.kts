@@ -1,15 +1,12 @@
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
     kotlin("kapt")
     id("org.jetbrains.compose")
+    id("com.diffplug.spotless")
 }
-
-group = "com.skaggsm"
-version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -19,7 +16,7 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation(project(":library"))
+    implementation(project(":jetpack-compose-optics"))
 
     implementation(compose.desktop.currentOs)
 
@@ -34,8 +31,15 @@ compose.desktop {
         mainClass = "MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "kotlin-compose-testing"
-            packageVersion = "1.0.0"
         }
+    }
+}
+
+spotless {
+    kotlin {
+        ktlint("0.41.0")
+    }
+    kotlinGradle {
+        ktlint("0.41.0")
     }
 }

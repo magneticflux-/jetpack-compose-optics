@@ -4,6 +4,5 @@ pluginManagement {
         maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
     }
 }
-rootProject.name = "jetpack-compose-optics"
 
-include("library", "example")
+include("jetpack-compose-optics", "example")

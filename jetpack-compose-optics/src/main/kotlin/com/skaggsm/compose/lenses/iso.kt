@@ -6,7 +6,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.snapshots.StateObject
 import arrow.optics.Iso
 
-
 fun <T, U> MutableState<T>.get(iso: Iso<T, U>): MutableState<U> = IsoMutableState(this, iso)
 
 internal class IsoMutableState<T, U>(

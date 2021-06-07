@@ -6,7 +6,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.snapshots.StateObject
 import arrow.optics.Lens
 
-
 fun <T, U> MutableState<T>.get(lens: Lens<T, U>): MutableState<U> = LensMutableState(this, lens)
 
 internal class LensMutableState<T, U>(
