@@ -16,7 +16,7 @@ on:
 
 jobs:
 
-  build:
+  assemble:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
       - name: Assemble
         run: ./gradlew assemble
   spotless:
-    needs: build
+    needs: assemble
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
       - name: Spotless
         run: ./gradlew spotlessCheck
   test:
-    needs: build
+    needs: assemble
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
