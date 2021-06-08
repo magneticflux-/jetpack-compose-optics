@@ -83,4 +83,4 @@ jobs:
       - name: Perform release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew githubRelease publishGitHubPackages closeAndReleaseStagingRepository
+        run: ./gradlew githubRelease publish closeAndReleaseStagingRepository
