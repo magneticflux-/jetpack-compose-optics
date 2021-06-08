@@ -4,9 +4,9 @@ plugins {
     kotlin("jvm")
     `maven-publish`
     id("com.diffplug.spotless")
+    id("org.shipkit.shipkit-auto-version") version "1.+"
     id("org.shipkit.shipkit-changelog") version "1.+"
     id("org.shipkit.shipkit-github-release") version "1.+"
-    id("org.shipkit.shipkit-auto-version") version "1.+"
 }
 
 group = "com.skaggsm"
