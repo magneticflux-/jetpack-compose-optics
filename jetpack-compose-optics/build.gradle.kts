@@ -11,6 +11,14 @@ plugins {
 
 group = "com.skaggsm"
 
+java {
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
