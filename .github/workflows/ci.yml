@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
       && github.ref == 'refs/heads/master'
-      && github.repository == 'shipkit/shipkit-demo'
+      && github.repository == 'magneticflux-/jetpack-compose-optics'
       && !(contains(toJSON(github.event.commits.*.message), '[skip release]') || contains(toJSON(github.event.commits.*.message), '[skip ci]'))
 
     steps:
