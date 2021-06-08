@@ -81,4 +81,6 @@ jobs:
           gradle-distribution-sha-256-sum-warning: false
 
       - name: Perform release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew githubRelease publishGitHubPackages closeAndReleaseStagingRepository
