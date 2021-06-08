@@ -4,8 +4,9 @@ plugins {
     kotlin("jvm")
     `maven-publish`
     id("com.diffplug.spotless")
-    id("org.shipkit.shipkit-changelog") version "1.1.15"
-    id("org.shipkit.shipkit-auto-version") version "1.1.17"
+    id("org.shipkit.shipkit-changelog") version "1.+"
+    id("org.shipkit.shipkit-github-release") version "1.+"
+    id("org.shipkit.shipkit-auto-version") version "1.+"
 }
 
 group = "com.skaggsm"
@@ -61,4 +62,18 @@ spotless {
     kotlinGradle {
         ktlint("0.41.0")
     }
+}
+
+tasks.generateChangelog {
+    repository = "magneticflux-/jetpack-compose-optics"
+    previousRevision = extra["shipkit-auto-version.previous-tag"].toString()
+    githubToken = System.getenv("GITHUB_TOKEN")
+}
+
+tasks.githubRelease {
+    dependsOn(tasks.generateChangelog)
+    repository = "magneticflux-/jetpack-compose-optics"
+    changelog = tasks.generateChangelog.get().outputFile
+    githubToken = System.getenv("GITHUB_TOKEN")
+    newTagRevision = System.getenv("GITHUB_SHA")
 }
