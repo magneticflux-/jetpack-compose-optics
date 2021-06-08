@@ -74,7 +74,7 @@ spotless {
 
 tasks.generateChangelog {
     repository = "magneticflux-/jetpack-compose-optics"
-    previousRevision = extra["shipkit-auto-version.previous-tag"].toString()
+    previousRevision = project.ext["shipkit-auto-version.previous-tag"].toString()
     githubToken = System.getenv("GITHUB_TOKEN")
 }
 
