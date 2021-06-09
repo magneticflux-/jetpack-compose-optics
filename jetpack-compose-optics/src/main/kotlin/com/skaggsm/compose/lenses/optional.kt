@@ -29,4 +29,24 @@ internal class OptionalMutableState<T, U>(
     override fun component1(): Either<T, U> = value
 
     override fun component2(): (Either<T, U>) -> Unit = { value = it }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as OptionalMutableState<*, *>
+
+        if (state != other.state) return false
+        if (optional != other.optional) return false
+        if (derived != other.derived) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = state.hashCode()
+        result = 31 * result + optional.hashCode()
+        result = 31 * result + derived.hashCode()
+        return result
+    }
 }
