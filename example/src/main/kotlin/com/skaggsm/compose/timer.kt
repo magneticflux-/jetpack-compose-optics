@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
 import kotlin.math.roundToLong
-import kotlin.reflect.KProperty1
 
 @optics
 data class TimerState(
@@ -57,8 +56,9 @@ fun main() = Window {
     val progress by state.get(TimerState::elapsedFraction)
     val elapsed by state.get(TimerState::elapsed + roundToTenths)
 
-    var start by state.get(TimerState.start)
-    var now by state.get(TimerState.now)
+    val start = state.get(TimerState.start)
+    val now = state.get(TimerState.now)
+
     var durationFloat by state.get(TimerState.maxDuration + durationToFloat)
 
     // Timer update (every 10ms)
@@ -70,7 +70,7 @@ fun main() = Window {
                 emit(Instant.now())
             }
         }.collect {
-            now = it
+            now.value = it
         }
     }
 
@@ -85,7 +85,7 @@ fun main() = Window {
             }
             Slider(durationFloat, { durationFloat = it }, valueRange = 0f..30f)
             Button({
-                start = Instant.now()
+                start.value = Instant.now()
             }) {
                 Text("Reset Timer")
             }
@@ -96,7 +96,7 @@ fun main() = Window {
 /**
  * Hopefully eventually upstreamed to Arrow
  */
-operator fun <T, V, U> KProperty1<T, V>.plus(other: Getter<V, U>): Getter<T, U> {
+operator fun <T, V, U> ((T) -> V).plus(other: Getter<V, U>): Getter<T, U> {
     return Getter {
         other.get(this(it))
     }
