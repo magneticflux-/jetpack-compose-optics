@@ -61,6 +61,12 @@ internal class ReversePrismMutableState<T, U>(
     private val state: MutableState<T>,
     private val prism: Prism<U, T>,
     /**
+     * A state to track the output's state when the prism can't be applied to the input.
+     *
+     * This gets reset as soon as the input changes or the output can be applied to the input.
+     */
+    private val alternate: MutableState<Option<U>> = mutableStateOf(None),
+    /**
      * A derived state that exploits the recomputation of the value to also reset the `alternate` state to [None].
      *
      * It is used to implement the [StateObject] methods by delegation since I don't want to yet ;)
@@ -68,13 +74,7 @@ internal class ReversePrismMutableState<T, U>(
     private val derived: State<U> = derivedStateOf {
         alternate.value = None // When `this.value` changes, invalidate the "alternative"
         prism.reverseGet(state.value) // Get a value out of it to specify its dependency
-    },
-    /**
-     * A state to track the output's state when the prism can't be applied to the input.
-     *
-     * This gets reset as soon as the input changes or the output can be applied to the input.
-     */
-    private val alternate: MutableState<Option<U>> = mutableStateOf(None)
+    }
 ) : MutableState<U>, StateObject by (derived as StateObject), State<U> by derived {
     override var value: U
         get() {
