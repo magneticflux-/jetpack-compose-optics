@@ -67,9 +67,12 @@ fun SelectableList(items: State<List<Person>>, selectedIndex: MutableState<Int>)
                 backgroundColor = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
                 modifier = Modifier
                     .padding(4.dp)
-                    .selectable(selected, onClick = {
-                        selectedIndex.value = index
-                    }),
+                    .selectable(
+                        selected,
+                        onClick = {
+                            selectedIndex.value = index
+                        }
+                    ),
                 elevation = 4.dp
             ) {
                 Text("$item", modifier = Modifier.padding(4.dp))
