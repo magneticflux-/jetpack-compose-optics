@@ -3,6 +3,7 @@
 package com.skaggsm.compose
 
 import androidx.compose.desktop.Window
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -18,8 +19,10 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import arrow.optics.optics
@@ -74,11 +77,14 @@ fun SelectableList(items: State<List<Person>>, selectedIndex: MutableState<Int>)
         }
     }
 
+internal fun <T> Iterable<T>.updated(index: Int, new: T): List<T> = mapIndexed { i, e -> if (i == index) new else e }
+internal fun <T> Iterable<T>.removed(index: Int): List<T> = filterIndexed { i, _ -> i != index }
+
 fun main() = Window {
     val state = remember { mutableStateOf(CrudState()) }
 
     val filterState = state.get(CrudState.filter)
-    val peopleState = state.get(CrudState.people)
+    var people by state.get(CrudState.people)
     val filteredPeopleState = state.get(CrudState::filteredPeople)
     val selectedIndexState = state.get(CrudState.selectedIndex)
 
@@ -89,8 +95,10 @@ fun main() = Window {
     MaterialTheme {
         Column {
             EditText("Filter prefix:", filterState)
-            Row {
-                SelectableList(filteredPeopleState, selectedIndexState)
+            Row(modifier = Modifier.weight(1f)) {
+                Box(modifier = Modifier.weight(1f)) {
+                    SelectableList(filteredPeopleState, selectedIndexState)
+                }
                 Column {
                     EditText("Name:", personDisplayedNameState)
                     EditText("Surname:", personDisplayedSurnameState)
@@ -98,15 +106,17 @@ fun main() = Window {
             }
             Row {
                 Button({
-
+                    people = people + personDisplayedState.value
                 }) {
                     Text("Create")
                 }
                 Button({
+                    people = people.updated(selectedIndexState.value, personDisplayedState.value)
                 }) {
                     Text("Update")
                 }
                 Button({
+                    people = people.removed(selectedIndexState.value)
                 }) {
                     Text("Delete")
                 }
