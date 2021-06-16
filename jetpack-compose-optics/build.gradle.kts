@@ -1,7 +1,7 @@
 import org.jetbrains.compose.compose
 
 plugins {
-    kotlin("jvm")
+    kotlin("multiplatform")
     `maven-publish`
     id("com.diffplug.spotless")
     id("org.shipkit.shipkit-auto-version") version "1.+"
@@ -11,44 +11,56 @@ plugins {
 
 group = "com.skaggsm"
 
-java {
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
 repositories {
     mavenCentral()
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/compose/dev") }
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
 }
 
-dependencies {
-    implementation(kotlin("stdlib"))
+kotlin {
+    jvm {
+        val main by compilations.getting {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+    }
 
-    // May have different implementing libraries, so let the consumer include it
-    compileOnly(compose.desktop.common)
+    js(IR) {
+        browser()
+        nodejs()
+    }
 
-    implementation(platform("io.arrow-kt:arrow-stack:0.13.2"))
-    implementation("io.arrow-kt:arrow-optics")
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib"))
 
-    testImplementation(kotlin("test-junit5"))
-    testImplementation(platform("org.junit:junit-bom:5.7.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-}
+                // May have different implementing libraries, so let the consumer include it
+                implementation(compose.runtime)
 
-tasks.test {
-    useJUnitPlatform()
+                // Waiting for https://github.com/arrow-kt/arrow/pull/2409
+                // implementation("io.arrow-kt:arrow-optics:1.0.0-SNAPSHOT")
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation("io.arrow-kt:arrow-optics:1.0.0-SNAPSHOT")
+            }
+        }
+        val jsMain by getting {
+            dependencies {
+            }
+        }
+    }
 }
 
 publishing {
-    publications {
+    /*publications {
         create<MavenPublication>("library") {
             from(components["java"])
         }
-    }
+    }*/
 
     repositories {
         mavenLocal()

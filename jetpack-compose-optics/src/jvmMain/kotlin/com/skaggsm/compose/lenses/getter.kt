@@ -13,10 +13,9 @@ internal class GetterState<T, U>(
     private val getter: Getter<T, U>,
     private val derived: State<U> = derivedStateOf { getter.get(state.value) }
 ) : StateObject by (derived as StateObject), State<U> by derived {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
+        if (other == null || this::class != other::class) return false
 
         other as GetterState<*, *>
 
