@@ -56,7 +56,7 @@ jobs:
         with:
           gradle-distribution-sha-256-sum-warning: false
       - name: Test
-        run: ./gradlew test
+        run: ./gradlew allTests
 
   publish:
     needs: [ test ]
