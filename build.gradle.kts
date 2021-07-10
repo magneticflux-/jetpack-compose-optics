@@ -32,6 +32,7 @@ kotlin {
     js(IR) {
         browser()
         nodejs()
+        binaries.executable()
     }
 
     sourceSets {
