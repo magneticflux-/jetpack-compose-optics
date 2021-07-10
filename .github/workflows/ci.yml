@@ -56,10 +56,10 @@ jobs:
         with:
           gradle-distribution-sha-256-sum-warning: false
       - name: Test
-        run: ./gradlew test
+        run: ./gradlew allTests
 
   publish:
-    needs: [ spotless, test ]
+    needs: [ test ]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
       && github.ref == 'refs/heads/master'
@@ -83,4 +83,5 @@ jobs:
       - name: Perform release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
         run: ./gradlew githubRelease publish
