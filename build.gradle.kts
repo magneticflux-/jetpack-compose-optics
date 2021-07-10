@@ -46,12 +46,6 @@ kotlin {
 }
 
 publishing {
-    /*publications {
-        create<MavenPublication>("library") {
-            from(components["java"])
-        }
-    }*/
-
     repositories {
         mavenLocal()
         maven {
