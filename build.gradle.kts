@@ -50,6 +50,17 @@ publishing {
     repositories {
         mavenLocal()
         maven {
+            name = "Personal"
+            url = uri("https://maven.skaggsm.com/releases")
+            credentials {
+                username = "deploy"
+                password = System.getenv("MAVEN_TOKEN")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
+        maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/magneticflux-/jetpack-compose-optics")
             credentials {
