@@ -59,7 +59,7 @@ jobs:
         run: ./gradlew test
 
   publish:
-    needs: [ spotless, test ]
+    needs: [ test ]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
       && github.ref == 'refs/heads/master'
