@@ -94,6 +94,7 @@ internal class ReversePrismMutableState<T, U>(
                     // Prism applied successfully, propagate the change up to the input state.
                     state.value = result.value
                 }
+                else -> {}
             }
             // Save the input in `alternate` for if a call to `get` comes before any dependencies change.
             alternate.value = value.some()

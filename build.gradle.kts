@@ -3,13 +3,23 @@ import org.jetbrains.compose.compose
 
 plugins {
     `maven-publish`
-    kotlin("multiplatform") version "1.5.10"
-    id("org.jetbrains.compose") version "0.5.0-build235"
-    id("com.github.ben-manes.versions") version "0.39.0"
-    id("com.diffplug.spotless") version "5.14.1"
+    kotlin("multiplatform") version "1.6.21"
+    id("org.jetbrains.compose") version "1.2.0-alpha01-dev686"
+    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.diffplug.spotless") version "6.6.1"
     id("org.shipkit.shipkit-auto-version") version "1.+"
     id("org.shipkit.shipkit-changelog") version "1.+"
     id("org.shipkit.shipkit-github-release") version "1.+"
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    gradleReleaseChannel = "current"
+    rejectVersionIf {
+        candidate.version.contains("""[-\.]M\d+""".toRegex()) ||
+            candidate.version.contains("rc", true) ||
+            candidate.version.contains("beta", true) ||
+            candidate.version.contains("alpha", true)
+    }
 }
 
 group = "com.skaggsm"
@@ -17,22 +27,21 @@ group = "com.skaggsm"
 repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    google()
 }
 
 kotlin {
     jvm {
         val main by compilations.getting {
             kotlinOptions {
-                jvmTarget = "1.8"
+                jvmTarget = "11"
             }
         }
     }
 
     js(IR) {
-        browser()
-        nodejs()
-        binaries.executable()
+        browser {}
+        nodejs {}
     }
 
     sourceSets {
@@ -40,7 +49,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation(compose.runtime)
-                implementation("io.arrow-kt:arrow-optics:1.0.0-SNAPSHOT")
+                implementation("io.arrow-kt:arrow-optics:1.1.2")
             }
         }
     }
@@ -71,19 +80,12 @@ publishing {
     }
 }
 
-tasks.withType<DependencyUpdatesTask> {
-    gradleReleaseChannel = "current"
-    rejectVersionIf {
-        candidate.version.contains("""-M\d+""".toRegex())
-    }
-}
-
 spotless {
     kotlin {
-        ktlint("0.41.0")
+        ktlint("0.45.2")
     }
     kotlinGradle {
-        ktlint("0.41.0")
+        ktlint("0.45.2")
     }
 }
 
