@@ -3,10 +3,10 @@ import org.jetbrains.compose.compose
 
 plugins {
     `maven-publish`
-    kotlin("multiplatform") version "1.6.21"
-    id("org.jetbrains.compose") version "1.2.0-alpha01-dev686"
+    kotlin("multiplatform") version "1.7.0"
+    id("org.jetbrains.compose") version "1.2.0-alpha01-dev748"
     id("com.github.ben-manes.versions") version "0.42.0"
-    id("com.diffplug.spotless") version "6.6.1"
+    id("com.diffplug.spotless") version "6.8.0"
     id("org.shipkit.shipkit-auto-version") version "1.+"
     id("org.shipkit.shipkit-changelog") version "1.+"
     id("org.shipkit.shipkit-github-release") version "1.+"
@@ -40,8 +40,8 @@ kotlin {
     }
 
     js(IR) {
-        browser {}
-        nodejs {}
+        browser()
+        nodejs()
     }
 
     sourceSets {
@@ -49,7 +49,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation(compose.runtime)
-                implementation("io.arrow-kt:arrow-optics:1.1.2")
+                implementation("io.arrow-kt:arrow-optics:1.1.3-alpha.31")
             }
         }
     }
@@ -82,10 +82,12 @@ publishing {
 
 spotless {
     kotlin {
-        ktlint("0.45.2")
+        ktlint("0.46.1")
+        diktat("1.2.1")
     }
     kotlinGradle {
-        ktlint("0.45.2")
+        ktlint("0.46.1")
+        diktat("1.2.1")
     }
 }
 
