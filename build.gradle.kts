@@ -4,7 +4,7 @@ import org.jetbrains.compose.compose
 plugins {
     `maven-publish`
     kotlin("multiplatform") version "1.7.0"
-    id("org.jetbrains.compose") version "1.2.0-alpha01-dev748"
+    id("org.jetbrains.compose") version "1.2.0-alpha01-dev753"
     id("com.github.ben-manes.versions") version "0.42.0"
     id("com.diffplug.spotless") version "6.8.0"
     id("org.shipkit.shipkit-auto-version") version "1.+"
@@ -49,7 +49,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 implementation(compose.runtime)
-                implementation("io.arrow-kt:arrow-optics:1.1.3-alpha.31")
+                implementation("io.arrow-kt:arrow-optics:1.1.3-alpha.37")
             }
         }
     }
